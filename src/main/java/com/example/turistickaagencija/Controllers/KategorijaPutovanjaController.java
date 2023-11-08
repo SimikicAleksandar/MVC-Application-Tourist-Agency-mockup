@@ -1,5 +1,5 @@
 package com.example.turistickaagencija.Controllers;
-    
+
 import com.example.turistickaagencija.Exceptions.UserNotFoundException;
 import com.example.turistickaagencija.Models.KategorijaPutovanja;
 import com.example.turistickaagencija.Models.Korisnik;
@@ -41,26 +41,38 @@ public class KategorijaPutovanjaController {
         model.addAttribute("kategorija", new KategorijaPutovanja());
         model.addAttribute("method", "/kategorije/save");
 
-        return "dodaj_kategorije";
+        return "dodaj_kategoriju";
     }
 
     @PostMapping("/kategorije/save")
-    public String saveUser(KategorijaPutovanja kategorijaPutovanja, RedirectAttributes ra) throws UserNotFoundException {
+    public String saveKategorija(KategorijaPutovanja kategorijaPutovanja, RedirectAttributes ra) throws UserNotFoundException {
         kategorijaPutovanjaService.save(kategorijaPutovanja);
         KategorijaPutovanja novaKategorija = kategorijaPutovanjaService.findKategorijaPutovanjaById(kategorijaPutovanja.getId());
 
-        KategorijaPutovanja kategorijaPutovanja1 = new KategorijaPutovanja(novaKategorija);
-        kategorijaPutovanjaService.save(kategorijaPutovanja1);
-
         ra.addFlashAttribute("message", "Kategorija Putovanja je sacuvana");
-        return "redirect:/";
+        return "redirect:/kategorije";
     }
 
+
     @PostMapping ("/kategorije/update")
-    public String updateUser(KategorijaPutovanja kategorijaPutovanja, RedirectAttributes ra) throws UserNotFoundException{
+    public String updateKategorija(KategorijaPutovanja kategorijaPutovanja, RedirectAttributes ra) throws UserNotFoundException{
         KategorijaPutovanja staraKategorija = kategorijaPutovanjaService.get(kategorijaPutovanja.getId());
-        kategorijaPutovanjaService.update(kategorijaPutovanja) ;
+        if(kategorijaPutovanja.getNazivKategorije().isEmpty() || kategorijaPutovanja.getNazivKategorije()==null){
+            kategorijaPutovanja.setNazivKategorije(staraKategorija.getNazivKategorije());
+        }
+        kategorijaPutovanjaService.update(kategorijaPutovanja);
         ra.addFlashAttribute("message", "Kategorija je izmenjena");
+        return "redirect:/kategorije";
+     /*   kategorijaPutovanjaService.update(kategorijaPutovanja) ;
+        ra.addFlashAttribute("message", "Kategorija je izmenjena");
+        return "redirect:/kategorije";
+      */
+    }
+
+    @GetMapping("/kategorije/delete/{id}")
+    public String deleteUser(@PathVariable("id") Long id, RedirectAttributes ra){
+        kategorijaPutovanjaService.delete(id);
+        ra.addFlashAttribute("message", "kategorija je obrisana!");
         return "redirect:/kategorije";
     }
 
@@ -70,7 +82,7 @@ public class KategorijaPutovanjaController {
             KategorijaPutovanja kategorijaPutovanja = kategorijaPutovanjaService.findKategorijaPutovanjaById(id);
             model.addAttribute("kategorija", kategorijaPutovanja);
             model.addAttribute("method", "/kategorije/update");
-            model.addAttribute("title", "Izmeni Kategoriju (Naziv:" + kategorijaPutovanja.getNazivKategorije() + ")");
+            model.addAttribute("title", "Izmeni Kategoriju (Naziv: " + kategorijaPutovanja.getNazivKategorije() + ")");
             return "dodaj_kategoriju";
         } catch (UserNotFoundException exception){
             ra.addFlashAttribute("message", "Kategorija nije izmenjena");

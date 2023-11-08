@@ -104,6 +104,14 @@ public class KorisnikController {
         }
     }
 
+    @GetMapping("/korisnici/delete/{id}")
+    public String deleteUser(@PathVariable("id") Long id, RedirectAttributes ra){
+        korisnikService.delete(id);
+        kupacService.delete(id);
+        ra.addFlashAttribute("message", "Korisnik je obrisan!");
+        return "redirect:/korisnici";
+    }
+
 
     @GetMapping("/profil")
     public String showProfile(Model model, HttpServletRequest httpServletRequest) throws UserNotFoundException {
