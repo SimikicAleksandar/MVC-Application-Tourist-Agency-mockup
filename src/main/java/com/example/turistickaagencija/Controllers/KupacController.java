@@ -43,7 +43,7 @@ public class KupacController {
         Kupac kupac = kupacService.get(id);
         model.addAttribute("kupac", kupac);
         model.addAttribute("naslov",
-                "Izmeni pacijenta (ime:" + kupac.getKorisnik().getIme() + ")");
+                "Izmeni pacijenta (ime:" + kupac.getKorisnikId() + ")");
         return "dodaj_kupca";
     }
 

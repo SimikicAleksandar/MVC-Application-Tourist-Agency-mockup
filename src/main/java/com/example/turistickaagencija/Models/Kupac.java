@@ -6,7 +6,6 @@ import java.util.List;
 
 public class Kupac {
     private Long korisnikId ;
-   // private Long  rezervacije;
     private Korisnik korisnik ;
 
     public Kupac(Long korisnikId, Korisnik korisnik) {

@@ -1,6 +1,8 @@
 package com.example.turistickaagencija.Models;
 
-public class KategorijaPutovanja {
+import java.io.Serializable;
+
+public class KategorijaPutovanja implements Serializable {
     private Long id ;
     private String nazivKategorije ;
     private String opis ;

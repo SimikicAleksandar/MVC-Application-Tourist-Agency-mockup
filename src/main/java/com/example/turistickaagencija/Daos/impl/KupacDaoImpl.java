@@ -53,7 +53,7 @@ public class KupacDaoImpl implements KupacDao {
     @Override
     public Kupac findOne(Long kupacID) {
         String sql =
-                "SELECT p.korisnikId" +
+                "SELECT p.korisnikId " +
                         "FROM kupci p " +
                         "WHERE p.korisnikId = ? " +
                         "ORDER BY p.korisnikId";
@@ -70,7 +70,7 @@ public class KupacDaoImpl implements KupacDao {
     @Override
     public List<Kupac> findAll() {
         String sql =
-                "SELECT p.korisnikId" +
+                "SELECT p.korisnikId " +
                         "FROM kupci p " +
                         "ORDER BY p.korisnikId";
 
