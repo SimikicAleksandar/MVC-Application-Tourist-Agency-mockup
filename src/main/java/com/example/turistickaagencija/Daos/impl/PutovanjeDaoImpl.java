@@ -144,19 +144,13 @@ public class PutovanjeDaoImpl implements PutovanjeDao {
     @Transactional
     @Override
     public int update(Putovanje putovanje) {
-        String sql = "UPDATE putovanja SET prevoznoSredstvo = ?, smestajnaJedinica = ?, nazivDestinacije = ?, kategorijaPutovanjaId = ?, datumIVremePolaska = ?," +
+        String sql = "UPDATE putovanja SET  nazivDestinacije = ?, datumIVremePolaska = ?," +
                 " datumIVremePovratka = ?, brojNocenja = ?,  cenaAranzmana = ?, ukupanBrojMesta = ?, " +
-                " brojSlobodnihMesta = ? WHERE id = ?";
-
-        // Extract kategorijaPutovanjaId from KategorijaPutovanja
-        Long kategorijaPutovanjaId = putovanje.getKategorijaPutovanja().getId();
+                " brojSlobodnihMesta = ? WHERE id = ? ";
 
         boolean success = jdbcTemplate.update(
                 sql,
-                putovanje.getPrevoznoSredstvo(),
-                putovanje.getSmestajnaJedinica(),
                 putovanje.getNazivDestinacije(),
-                kategorijaPutovanjaId, // Use the extracted ID
                 putovanje.getDatumIVremePolaska(),
                 putovanje.getDatumIVremePovratka(),
                 putovanje.getBrojNocenja(),

@@ -3,11 +3,13 @@ package com.example.turistickaagencija.Controllers;
 import com.example.turistickaagencija.Exceptions.UserNotFoundException;
 import com.example.turistickaagencija.Models.KategorijaPutovanja;
 import com.example.turistickaagencija.Models.Putovanje;
+import com.example.turistickaagencija.Services.KategorijaPutovanjaService;
 import com.example.turistickaagencija.Services.PutovanjeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -19,6 +21,8 @@ import java.util.List;
 public class PutovanjeController {
     @Autowired
     private PutovanjeService putovanjeService;
+    @Autowired
+    private KategorijaPutovanjaService kategorijaPutovanjaService;
 
     @GetMapping("/putovanja") // link na koji idu putovanja
     public String showPutovanjaList(Model model, HttpServletRequest request) throws UserNotFoundException {
@@ -33,36 +37,49 @@ public class PutovanjeController {
             model.addAttribute("putovanje", new Putovanje());
             model.addAttribute("redirect","/turistickaAgencija/putovanja");
         }
-        model.addAttribute("putovanje", new KategorijaPutovanja());
+        List<KategorijaPutovanja> kategorijePutovanja = kategorijaPutovanjaService.findAll();
+        model.addAttribute("putovanje", new Putovanje());
         model.addAttribute("method", "/putovanja/save");
+        model.addAttribute("kategorijePutovanja", kategorijePutovanja);
 
         return "dodaj_putovanje";
     }
 
-    @PostMapping("/putovanja/save")
+  /*  @PostMapping("/putovanja/save")
     public String savePutovanje(Putovanje putovanje, RedirectAttributes ra) throws UserNotFoundException {
         putovanjeService.save(putovanje);
         Putovanje novoPutovanje = putovanjeService.get(putovanje.getId());
 
         ra.addFlashAttribute("message", "Putovanje je sacuvano");
         return "redirect:/putovanja";
-    }
+    }*/
+  @PostMapping("/putovanja/save")
+  public String savePutovanje(@ModelAttribute("putovanje") Putovanje putovanje, RedirectAttributes redirectAttributes) throws UserNotFoundException {
+      if (putovanje.getId() == null) {
+          putovanje.setKategorijaPutovanja(kategorijaPutovanjaService.findKategorijaPutovanjaById(putovanje.getKategorijaPutovanjaId()));
+          putovanjeService.save(putovanje);
+          redirectAttributes.addFlashAttribute("message", "Putovanje je sacuvano");
+      } else {
+          putovanje.setKategorijaPutovanja(kategorijaPutovanjaService.findKategorijaPutovanjaById(putovanje.getKategorijaPutovanjaId()));
+          putovanjeService.update(putovanje);
+          redirectAttributes.addFlashAttribute("message", "Putovanje je azurirano");
+      }
+      return "redirect:/putovanja";
+  }
 
 
     @PostMapping ("/putovanja/update")
-    public String updatePutovanje(Putovanje putovanje, RedirectAttributes ra) throws UserNotFoundException{
+    public String updatePutovanja(Putovanje putovanje, RedirectAttributes ra) throws UserNotFoundException{
         Putovanje staroPutovanje = putovanjeService.get(putovanje.getId());
-        if(putovanje.getNazivDestinacije().isEmpty() || putovanje.getNazivDestinacije()==null){
-            putovanje.setNazivDestinacije(staroPutovanje.getNazivDestinacije());
-        }
+
+        putovanje.setKategorijaPutovanja(staroPutovanje.getKategorijaPutovanja());
+        putovanje.setSmestajnaJedinica(staroPutovanje.getSmestajnaJedinica());
+
         putovanjeService.update(putovanje);
-        ra.addFlashAttribute("message", "putovanje je izmenjeno");
+        ra.addFlashAttribute("message", "Putovanje je izmenjeno");
         return "redirect:/putovanja";
-     /*   kategorijaPutovanjaService.update(kategorijaPutovanja) ;
-        ra.addFlashAttribute("message", "Kategorija je izmenjena");
-        return "redirect:/kategorije";
-      */
     }
+
 
     @GetMapping("/putovanja/delete/{id}")
     public String deletePutovanje(@PathVariable("id") Long id, RedirectAttributes ra){
@@ -78,7 +95,7 @@ public class PutovanjeController {
             model.addAttribute("putovanje", putovanje);
             model.addAttribute("method", "/putovanja/update");
             model.addAttribute("title", "Izmeni Putovanje (Naziv: " + putovanje.getNazivDestinacije() + ")");
-            return "dodaj_putovanje";
+            return "izmeni_putovanje";
         } catch (UserNotFoundException exception){
             ra.addFlashAttribute("message", "Kategorija nije izmenjena");
             return "redirect:/putovanja";

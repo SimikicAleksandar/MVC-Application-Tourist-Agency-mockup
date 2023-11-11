@@ -11,6 +11,7 @@ public class Putovanje {
     private String nazivDestinacije ;
     //slika lokacije ako ti se da da radis za sedmicu
     private KategorijaPutovanja kategorijaPutovanja;
+    private Long kategorijaPutovanjaId;
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime datumIVremePolaska;
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
@@ -21,6 +22,29 @@ public class Putovanje {
     private Long brojSlobodnihMesta;
 
     public Putovanje() {}
+
+    public Putovanje(Long id, PrevoznoSredstvo prevoznoSredstvo, SmestajnaJedinica smestajnaJedinica, String nazivDestinacije, KategorijaPutovanja kategorijaPutovanja, Long kategorijaPutovanjaId, LocalDateTime datumIVremePolaska, LocalDateTime datumIVremePovratka, Long brojNocenja, Long cenaAranzmana, Long ukupanBrojMesta, Long brojSlobodnihMesta) {
+        this.id = id;
+        this.prevoznoSredstvo = prevoznoSredstvo;
+        this.smestajnaJedinica = smestajnaJedinica;
+        this.nazivDestinacije = nazivDestinacije;
+        this.kategorijaPutovanja = kategorijaPutovanja;
+        this.kategorijaPutovanjaId = kategorijaPutovanjaId;
+        this.datumIVremePolaska = datumIVremePolaska;
+        this.datumIVremePovratka = datumIVremePovratka;
+        this.brojNocenja = brojNocenja;
+        this.cenaAranzmana = cenaAranzmana;
+        this.ukupanBrojMesta = ukupanBrojMesta;
+        this.brojSlobodnihMesta = brojSlobodnihMesta;
+    }
+
+    public Long getKategorijaPutovanjaId() {
+        return kategorijaPutovanjaId;
+    }
+
+    public void setKategorijaPutovanjaId(Long kategorijaPutovanjaId) {
+        this.kategorijaPutovanjaId = kategorijaPutovanjaId;
+    }
 
     public Putovanje(Long id, PrevoznoSredstvo prevoznoSredstvo, SmestajnaJedinica smestajnaJedinica, String nazivDestinacije, KategorijaPutovanja kategorijaPutovanja, LocalDateTime datumIVremePolaska, LocalDateTime datumIVremePovratka, Long brojNocenja, Long cenaAranzmana, Long ukupanBrojMesta, Long brojSlobodnihMesta) {
         this.id = id;
