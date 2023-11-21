@@ -120,13 +120,13 @@ public class KorisnikController {
         Korisnik korisnik = korisnikService.checkCookieUser(cookies);
         model.addAttribute("korisnik", korisnik);
         if(korisnik.getUloga().equals(Uloga.ADMINISTRATOR)){
-            model.addAttribute("uloga", "admin");
+            model.addAttribute("uloga", "ADMINISTRATOR");
         }
         else if(korisnik.getUloga().equals(Uloga.MENADZER)){
-            model.addAttribute("uloga", "menadzer");
+            model.addAttribute("uloga", "MENADZER");
         }
         else if(korisnik.getUloga().equals(Uloga.KUPAC)){
-            model.addAttribute("uloga", "kupac");
+            model.addAttribute("uloga", "KUPAC");
         }
         return "profil";
     }
