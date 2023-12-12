@@ -74,7 +74,7 @@ public class LoginController {
             if(korisnik.getUloga().equals(Uloga.ADMINISTRATOR)){
                 return "redirect:/";
             } else if(korisnik.getUloga().equals(Uloga.MENADZER)){
-                return "redirect:/";
+                return "redirect:/indexZaMenadzera";
             } else if(korisnik.getUloga().equals(Uloga.KUPAC)){
                 return "redirect:/";
             }

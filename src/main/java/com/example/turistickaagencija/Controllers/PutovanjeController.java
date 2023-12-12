@@ -3,7 +3,9 @@ package com.example.turistickaagencija.Controllers;
 import com.example.turistickaagencija.Exceptions.UserNotFoundException;
 import com.example.turistickaagencija.Models.KategorijaPutovanja;
 import com.example.turistickaagencija.Models.Putovanje;
+import com.example.turistickaagencija.Models.Uloga;
 import com.example.turistickaagencija.Services.KategorijaPutovanjaService;
+import com.example.turistickaagencija.Services.KorisnikService;
 import com.example.turistickaagencija.Services.PutovanjeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -24,11 +27,26 @@ public class PutovanjeController {
     @Autowired
     private KategorijaPutovanjaService kategorijaPutovanjaService;
 
+    @Autowired
+    private KorisnikService korisnikService;
+
     @GetMapping("/putovanja") // link na koji idu putovanja
     public String showPutovanjaList(Model model, HttpServletRequest request) throws UserNotFoundException {
         List<Putovanje> listPutovanja = putovanjeService.findAll();
         model.addAttribute("list", listPutovanja); // prosledjivanje svih kategorija
         return "putovanja";
+
+    }
+    //PRIKAZ INDEXA ZA MENADZERA
+    @GetMapping("/indexZaMenadzera") // link na koji idu putovanja
+    public String showMenadzerIndex(Model model, HttpServletRequest request) throws UserNotFoundException {
+        Cookie[] cookies = request.getCookies();
+        List<Putovanje> listPutovanja = putovanjeService.findAll();
+          if(korisnikService.checkCookies(cookies, Uloga.MENADZER)){
+            model.addAttribute("uloga", "menadzer");
+        }
+        model.addAttribute("list", listPutovanja); // prosledjivanje svih
+        return "indexZaMenadzera";
 
     }
     @GetMapping("/putovanja/{src}")
