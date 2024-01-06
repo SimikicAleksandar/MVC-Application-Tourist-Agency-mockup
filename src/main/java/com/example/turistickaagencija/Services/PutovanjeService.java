@@ -16,4 +16,9 @@ public interface PutovanjeService {
     Putovanje save(Putovanje putovanje);
     Putovanje update(Putovanje putovanje);
     Putovanje delete(Long id);
+    //sledece su funkcije za pretragu. CHATGPT IDE BRRR !
+    List<Putovanje> searchPutovanje(String query);
+    public List<Putovanje> searchPutovanjeByAmountRange(Long minCena, Long maxCena);
+    public List<Putovanje> findSortedPutovanje(String sort, String pravac) ;
+
 }

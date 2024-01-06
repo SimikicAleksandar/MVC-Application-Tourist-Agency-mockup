@@ -8,6 +8,7 @@ import com.example.turistickaagencija.Models.Uloga;
 import com.example.turistickaagencija.Services.PutovanjeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.spring5.processor.SpringInputPasswordFieldTagProcessor;
 
 import javax.servlet.http.Cookie;
 import java.util.List;
@@ -58,4 +59,18 @@ public class DatabasePutovanjeServiceImpl implements PutovanjeService {
         return putovanje;
     }
 
+    @Override
+    public List<Putovanje> searchPutovanje(String query){
+        return putovanjeDao.searchPutovanje(query);
+    }
+
+    @Override
+    public List<Putovanje> searchPutovanjeByAmountRange(Long minCena, Long maxCena){
+        return putovanjeDao.searchPutovanjeByAmountRange(minCena, maxCena);
+    }
+
+    @Override
+    public List<Putovanje> findSortedPutovanje(String sort, String pravac){
+        return putovanjeDao.findSortedPutovanja(sort, pravac);
+    }
 }

@@ -169,4 +169,50 @@ public class PutovanjeDaoImpl implements PutovanjeDao {
         String sql = "DELETE FROM putovanja WHERE id = ?";
         return jdbcTemplate.update(sql, id);
     }
+
+    @Override
+    public List<Putovanje> searchPutovanje(String query) {
+        String sql =
+                "SELECT p.id, p.prevoznoSredstvo, p.smestajnaJedinica, p.nazivDestinacije, p.kategorijaPutovanjaId, p.datumIVremePolaska, p.datumIVremePovratka, p.brojNocenja, p.cenaAranzmana, p.ukupanBrojMesta, p.brojSlobodnihMesta " +
+                        "FROM putovanja p " +
+                        "JOIN KategorijaPutovanja n ON p.kategorijaPutovanjaId = n.nazivKategorije " +
+                        "WHERE p.prevoznoSredstvo LIKE ? OR p.nazivDestinacije LIKE ? OR n.nazivKategorije LIKE ? OR p.brojNocenja LIKE ? " +
+                        "ORDER BY p.id";
+
+        PutovanjeRowCallBackHandler rowCallbackHandler = new PutovanjeRowCallBackHandler();
+        String likeQuery = "%" + query + "%";
+        jdbcTemplate.query(sql, rowCallbackHandler, likeQuery, likeQuery, likeQuery, likeQuery);
+
+        return rowCallbackHandler.getPutovanja();
+    }
+
+    @Override
+    public List<Putovanje> searchPutovanjeByAmountRange(Long minCena, Long maxCena) {
+        String sql =
+                "SELECT p.id, p.prevoznoSredstvo, p.smestajnaJedinica, p.nazivDestinacije, p.kategorijaPutovanjaId, p.datumIVremePolaska, p.datumIVremePovratka, p.brojNocenja, p.cenaAranzmana, p.ukupanBrojMesta, p.brojSlobodnihMesta " +
+                        "FROM putovanja p " +
+                        "WHERE p.cenaAranzmana BETWEEN ? AND ? " +
+                        "ORDER BY p.id";
+
+        PutovanjeRowCallBackHandler rowCallbackHandler = new PutovanjeRowCallBackHandler();
+        jdbcTemplate.query(sql, rowCallbackHandler, minCena, maxCena);
+
+        return rowCallbackHandler.getPutovanja();
+    }
+
+    @Override
+    public List<Putovanje> findSortedPutovanja(String sort, String pravac) {
+        String sql = "SELECT p.id, p.prevoznoSredstvo, p.smestajnaJedinica, p.nazivDestinacije, p.kategorijaPutovanjaId, p.datumIVremePolaska, p.datumIVremePovratka, p.brojNocenja, p.cenaAranzmana, p.ukupanBrojMesta, p.brojSlobodnihMesta " +
+                "FROM putovanja p " +
+                "ORDER BY " + sort + " " + pravac;
+
+        PutovanjeRowCallBackHandler rowCallbackHandler = new PutovanjeRowCallBackHandler();
+        jdbcTemplate.query(sql, rowCallbackHandler);
+
+        if (rowCallbackHandler.getPutovanja().isEmpty()) {
+            return null;
+        }
+        return rowCallbackHandler.getPutovanja();
+    }
+
 }

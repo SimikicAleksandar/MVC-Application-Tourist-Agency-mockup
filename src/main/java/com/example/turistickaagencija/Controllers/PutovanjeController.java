@@ -10,10 +10,7 @@ import com.example.turistickaagencija.Services.PutovanjeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.Cookie;
@@ -33,21 +30,56 @@ public class PutovanjeController {
     @GetMapping("/putovanja") // link na koji idu putovanja
     public String showPutovanjaList(Model model, HttpServletRequest request) throws UserNotFoundException {
         List<Putovanje> listPutovanja = putovanjeService.findAll();
+        Cookie[] cookies = request.getCookies();
+        if(korisnikService.checkCookies(cookies, Uloga.ADMINISTRATOR)){
+            model.addAttribute("uloga", "admin");
+        }
+        else if(korisnikService.checkCookies(cookies, Uloga.MENADZER)){
+            model.addAttribute("uloga", "menadzer");
+        }
         model.addAttribute("list", listPutovanja); // prosledjivanje svih kategorija
         return "putovanja";
 
     }
     //PRIKAZ INDEXA ZA MENADZERA
     @GetMapping("/indexZaMenadzera") // link na koji idu putovanja
-    public String showMenadzerIndex(Model model, HttpServletRequest request) throws UserNotFoundException {
-        Cookie[] cookies = request.getCookies();
-        List<Putovanje> listPutovanja = putovanjeService.findAll();
-          if(korisnikService.checkCookies(cookies, Uloga.MENADZER)){
-            model.addAttribute("uloga", "menadzer");
-        }
-        model.addAttribute("list", listPutovanja); // prosledjivanje svih
-        return "indexZaMenadzera";
+    public String showMenadzerIndex(Model model, HttpServletRequest request,
+                                    @RequestParam(name = "query", required = false) String query,
+                                    @RequestParam(name = "order", required = false) String order,
+                                    @RequestParam(name = "orderBy", required = false) String orderBy,
+                                    @RequestParam(name = "minCena", required = false) Long minCena,
+                                    @RequestParam(name = "maxCena", required = false) Long maxCena,
+                                    RedirectAttributes ra) throws UserNotFoundException {
 
+        if (order == null) {
+            order = "id";
+        }
+        if (orderBy == null) {
+            orderBy = "asc";
+        }
+
+        List<Putovanje> list;
+        if (query != null && !query.isEmpty()) {
+            list = putovanjeService.searchPutovanje(query);
+        } else if (minCena != null && maxCena != null) {
+            list = putovanjeService.searchPutovanjeByAmountRange(minCena, maxCena);
+        } else {
+            list = putovanjeService.findSortedPutovanje(order, orderBy);
+        }
+
+        model.addAttribute("listPutovanja", list);
+        model.addAttribute("newOrderBy", orderBy.equals("asc") ? "desc" : "asc");
+
+        if (ra.getFlashAttributes().containsKey("message")) {
+            String message = (String) ra.getFlashAttributes().get("message");
+            model.addAttribute("message", message);
+        }
+
+        Cookie[] cookies = request.getCookies();
+        if (korisnikService.checkCookies(cookies, Uloga.MENADZER)) {
+            return "indexZaMenadzera";
+        }
+        return "odbijen_pristup";
     }
     @GetMapping("/putovanja/{src}")
     public String showNewForm(@PathVariable("src") String src, Model model){

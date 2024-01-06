@@ -12,4 +12,9 @@ public interface PutovanjeDao {
     public int save(Putovanje putovanje);
     public int update(Putovanje putovanje);
     public int delete(Long id);
+    //Opet kaem ispod su funkcije za ovu pretragu. Pomozi Boze da li rade :)
+    List<Putovanje> searchPutovanje(String query);
+    public List<Putovanje> searchPutovanjeByAmountRange(Long minCena, Long maxCena);
+    public List<Putovanje> findSortedPutovanja(String sort, String pravac) ;
+
 }

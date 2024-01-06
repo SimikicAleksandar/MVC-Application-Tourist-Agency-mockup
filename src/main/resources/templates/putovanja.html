@@ -12,6 +12,8 @@
   </style>
 </head>
 <body>
+<div th:if="${uloga == 'admin'}" th:include="admin_navbar :: header"></div>
+<div th:if="${uloga == 'menadzer'}" th:include="menadzer_navbar :: header"></div>
 <div class="table-container">
   <table class="table">
     <thead>
