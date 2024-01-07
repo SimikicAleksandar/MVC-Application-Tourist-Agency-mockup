@@ -175,7 +175,7 @@ public class PutovanjeDaoImpl implements PutovanjeDao {
         String sql =
                 "SELECT p.id, p.prevoznoSredstvo, p.smestajnaJedinica, p.nazivDestinacije, p.kategorijaPutovanjaId, p.datumIVremePolaska, p.datumIVremePovratka, p.brojNocenja, p.cenaAranzmana, p.ukupanBrojMesta, p.brojSlobodnihMesta " +
                         "FROM putovanja p " +
-                        "JOIN KategorijaPutovanja n ON p.kategorijaPutovanjaId = n.nazivKategorije " +
+                        "JOIN KategorijaPutovanja n ON p.kategorijaPutovanjaId = n.kategorijaPutovanjaId " +
                         "WHERE p.prevoznoSredstvo LIKE ? OR p.nazivDestinacije LIKE ? OR n.nazivKategorije LIKE ? OR p.brojNocenja LIKE ? " +
                         "ORDER BY p.id";
 
