@@ -92,7 +92,7 @@ public class LoginController {
         sessionCookie.setPath("/");
         response.addCookie(sessionCookie);
 
-        return "redirect:/login";
+        return "redirect:/index";
     }
 
 }

@@ -20,6 +20,7 @@
       <th scope="col">Id</th>
       <th scope="col">Ime</th>
       <th scope="col">Prezime</th>
+      <th scope="col">Rezervisao</th>
       <th scope="col"></th>
     </tr>
     </thead>
@@ -28,6 +29,7 @@
       <td th:text="${kupac.getKorisnikId()}"></td>
       <td th:text="${kupac.getKorisnik().getIme()}"></td>
       <td th:text="${kupac.getKorisnik().getPrezime()}"></td>
+      <td th:text="${kupac.isRezervisao()}"></td>
       <td>
         <a th:href="@{'/kupci/edit/' + ${kupac.getKorisnikId()}}" class="btn btn-secondary btn-sm">Izmeni</a>
         <a th:href="@{'/kupci/delete/' + ${kupac.getKorisnikId()}}" class="btn btn-secondary btn-sm">Obrisi</a>

@@ -5,14 +5,16 @@ import java.time.LocalDateTime;
 public class Rezervacija {
     private Long id ;
     private LocalDateTime datumIVremeRezervacije;
+    private Long brojPutnika;
     private Long putovanjeId;
     private Putovanje putovanje;
     private Long kupacId;
     private Kupac kupac;
 
-    public Rezervacija(Long id, LocalDateTime datumIVremeRezervacije, Putovanje putovanje, Kupac kupac){
+    public Rezervacija(Long id, LocalDateTime datumIVremeRezervacije, Long brojPutnika, Putovanje putovanje, Kupac kupac){
         this.id = id;
         this.datumIVremeRezervacije = datumIVremeRezervacije;
+        this.brojPutnika = brojPutnika;
         this.putovanje = putovanje;
         this.kupac = kupac;
     }
@@ -34,6 +36,14 @@ public class Rezervacija {
 
     public void setDatumIVremeRezervacije(LocalDateTime datumIVremeRezervacije) {
         this.datumIVremeRezervacije = datumIVremeRezervacije;
+    }
+
+    public Long getBrojPutnika() {
+        return brojPutnika;
+    }
+
+    public void setBrojPutnika(Long brojPutnika) {
+        this.brojPutnika = brojPutnika;
     }
 
     public Long getPutovanjeId() {

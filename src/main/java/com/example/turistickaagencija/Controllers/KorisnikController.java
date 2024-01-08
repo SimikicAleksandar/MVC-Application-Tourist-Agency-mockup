@@ -75,7 +75,7 @@ public class KorisnikController {
 
         }
         ra.addFlashAttribute("message", "Korisnik je sacuvan");
-        return "redirect:/";
+        return "redirect:/index";
     }
 
     @PostMapping ("/korisnici/update")

@@ -38,6 +38,7 @@ public class RezervacijaDaoImpl implements RezervacijaDao {
             int index = 1;
             Long id = rs.getLong(index++);
             LocalDateTime datumIVremeRezervacije = rs.getTimestamp(index++).toLocalDateTime();
+            Long brojPutnika = rs.getLong(index++);
             Long putovanjeId = rs.getLong(index++);
             Long kupacId = rs.getLong(index++);
 
@@ -46,7 +47,7 @@ public class RezervacijaDaoImpl implements RezervacijaDao {
 
             Rezervacija rezervacija = RezervacijaMap.get(id);
             if (rezervacija == null) {
-                rezervacija = new Rezervacija(id, datumIVremeRezervacije, putovanje, kupac);
+                rezervacija = new Rezervacija(id, datumIVremeRezervacije, brojPutnika, putovanje, kupac);
                 RezervacijaMap.put(rezervacija.getId(), rezervacija);
             }
         }
@@ -58,7 +59,7 @@ public class RezervacijaDaoImpl implements RezervacijaDao {
 
     @Override
     public Rezervacija findOne(Long id) {
-        String sql = "SELECT r.id, r.datumIVremeRezervacije, putovanjeId, kupacId "
+        String sql = "SELECT r.id, r.datumIVremeRezervacije, r.brojPutnika, r.putovanjeId, r.kupacId "
                 + "FROM rezervacije r " +
                 "WHERE r.id = ? " + "ORDER BY r.id ";
         RezervacijaDaoImpl.RezervacijaRowCallBackHandler rowCallBackHandler = new RezervacijaDaoImpl.RezervacijaRowCallBackHandler();
@@ -73,7 +74,7 @@ public class RezervacijaDaoImpl implements RezervacijaDao {
     @Override
     public List<Rezervacija> findAll(){
         String sql =
-                "SELECT r.id, r.datumIVremeRezervacije, putovanjeId, kupacId "
+                "SELECT r.id, r.datumIVremeRezervacije, r.brojPutnika, r.putovanjeId, r.kupacId "
                         + "FROM rezervacije r " + "ORDER BY r.id ";
 
         RezervacijaDaoImpl.RezervacijaRowCallBackHandler rowCallBackHandler = new RezervacijaDaoImpl.RezervacijaRowCallBackHandler();
@@ -91,12 +92,13 @@ public class RezervacijaDaoImpl implements RezervacijaDao {
         PreparedStatementCreator preparedStatementCreator = new PreparedStatementCreator() {
             @Override
             public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-                String sql = "INSERT INTO rezervacije (datumIVremeRezervacije, putovanjeId, kupacId) VALUES (?, ?, ?)";
+                String sql = "INSERT INTO rezervacije (datumIVremeRezervacije, brojPutnika, putovanjeId, kupacId) VALUES (?, ?, ?, ?)";
 
                 PreparedStatement preparedStatement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 int index = 1;
                 Timestamp timestamp = Timestamp.valueOf(rezervacija.getDatumIVremeRezervacije());
                 preparedStatement.setString(index++, timestamp.toString());
+                preparedStatement.setLong(index++, rezervacija.getBrojPutnika());
                 preparedStatement.setLong(index++, rezervacija.getPutovanjeId());
                 preparedStatement.setLong(index++, rezervacija.getKupacId());
                 return preparedStatement;
@@ -110,8 +112,9 @@ public class RezervacijaDaoImpl implements RezervacijaDao {
     @Override
     public int update(Rezervacija rezervacija) {
         String sql =
-                "UPDATE rezervacije SET datumIVremeRezervacije = ?, putovanjeId = ?, kupacId = ? WHERE id = ? ";
+                "UPDATE rezervacije SET datumIVremeRezervacije = ?, brojPutnika = ?, putovanjeId = ?, kupacId = ? WHERE id = ? ";
         boolean uspeh = jdbcTemplate.update(sql, Timestamp.valueOf(rezervacija.getDatumIVremeRezervacije()).toString(),
+                rezervacija.getBrojPutnika(),
                 rezervacija.getPutovanjeId(), rezervacija.getKupacId(), rezervacija.getId())== 1;
         return uspeh ? 1 : 0 ;
     }
@@ -133,7 +136,7 @@ public class RezervacijaDaoImpl implements RezervacijaDao {
 
     @Override
     public List<Rezervacija> pretraziRezervacije(String upit){
-        String sql = "SELECT r.id, r.datumIVremeRezervacije, r.putovanjeId, r.kupacId " +
+        String sql = "SELECT r.id, r.datumIVremeRezervacije, r.brojPutnika, r.putovanjeId, r.kupacId " +
                 "FROM rezervacije r " +
                 "JOIN korisnici k ON r.kupacId = k.id " +
                 "WHERE k.ime LIKE ? OR k.prezime LIKE ? or k.jmbg LIKE ? " +

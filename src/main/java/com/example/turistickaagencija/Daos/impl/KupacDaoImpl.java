@@ -37,12 +37,12 @@ public class KupacDaoImpl implements KupacDao {
         public void processRow(ResultSet resultSet) throws SQLException {
             int index = 1;
             Long kupacId = resultSet.getLong(index++);
-
+            Boolean rezervisao = resultSet.getBoolean(index++);
             Korisnik korisnik = korisnikDao.findOne(kupacId);
 
             Kupac kupac = Kupci.get(kupacId);
             if (kupac == null) {
-                kupac = new Kupac(kupacId, korisnik);
+                kupac = new Kupac(kupacId, korisnik, rezervisao);
                 Kupci.put(kupac.getKorisnikId(), kupac);
             }
         }
@@ -53,7 +53,7 @@ public class KupacDaoImpl implements KupacDao {
     @Override
     public Kupac findOne(Long kupacID) {
         String sql =
-                "SELECT p.korisnikId " +
+                "SELECT p.korisnikId, p.rezervisao " +
                         "FROM kupci p " +
                         "WHERE p.korisnikId = ? " +
                         "ORDER BY p.korisnikId";
@@ -70,7 +70,7 @@ public class KupacDaoImpl implements KupacDao {
     @Override
     public List<Kupac> findAll() {
         String sql =
-                "SELECT p.korisnikId " +
+                "SELECT p.korisnikId, p.rezervisao " +
                         "FROM kupci p " +
                         "ORDER BY p.korisnikId";
 
@@ -89,10 +89,11 @@ public class KupacDaoImpl implements KupacDao {
         PreparedStatementCreator preparedStatementCreator = new PreparedStatementCreator() {
             @Override
             public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-                String sql = "INSERT INTO kupci (korisnikId) values (?)";
+                String sql = "INSERT INTO kupci (korisnikId, rezervisao) values (?, ?)";
                 PreparedStatement preparedStatement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 int index = 1;
                 preparedStatement.setLong(index++, kupac.getKorisnikId());
+                preparedStatement.setBoolean(index++, kupac.isRezervisao());
                 return preparedStatement;
             }
         };
@@ -105,8 +106,9 @@ public class KupacDaoImpl implements KupacDao {
     @Transactional
     @Override
     public int update(Kupac kupac) {
-        String sql = "UPDATE kupci SET  kupacId = ? WHERE korisnikId = ?";
+        String sql = "UPDATE kupci SET  rezervisao = ? WHERE korisnikId = ?";
         boolean success = jdbcTemplate.update(sql,
+                kupac.isRezervisao(),
                 kupac.getKorisnikId()) == 1;
         return success ? 1 : 0;
     }
