@@ -95,7 +95,12 @@
                 <input type="hidden" name="putovanjeId" th:value="${putovanje.id}" />
                 <!-- Add a hidden input field to store the number of passengers -->
                 <input type="hidden" id="numberOfPassengersInput" name="brojPutnika" />
+                <div th:if="${uloga == 'kupac'}">
                 <button type="button" class="btn btn-secondary btn-sm" onclick="promptForPassengers()">REZERVISI</button>
+                </div>
+                <div th:if="${uloga != 'kupac'}">
+                  <a th:href="@{/login}" class="btn btn-secondary btn-sm">REZERVISI</a>
+                </div>
               </form>
             </td>
           </tr>
@@ -107,7 +112,7 @@
 </div>
 <script>
   function promptForPassengers() {
-    var brojPutnika = prompt("Broj osoba za koje rezervisete:", "1");
+    var brojPutnika = prompt("Unesite broj osoba za koje rezervisete:", "1");
 
     // Check if the user entered a number and is not null or empty
     if (brojPutnika !== null && brojPutnika !== "") {
