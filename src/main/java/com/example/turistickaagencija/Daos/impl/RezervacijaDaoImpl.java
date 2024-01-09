@@ -99,8 +99,20 @@ public class RezervacijaDaoImpl implements RezervacijaDao {
                 Timestamp timestamp = Timestamp.valueOf(rezervacija.getDatumIVremeRezervacije());
                 preparedStatement.setString(index++, timestamp.toString());
                 preparedStatement.setLong(index++, rezervacija.getBrojPutnika());
-                preparedStatement.setLong(index++, rezervacija.getPutovanjeId());
-                preparedStatement.setLong(index++, rezervacija.getKupacId());
+
+                //preparedStatement.setLong(index++, rezervacija.getKupacId());
+                if (rezervacija.getPutovanjeId() != null){
+                    preparedStatement.setLong(index++, rezervacija.getPutovanjeId());
+                } else{
+                    preparedStatement.setNull(index++, Types.BIGINT);
+                }
+                // Handle null for kupacId
+                if (rezervacija.getKupacId() != null) {
+                    preparedStatement.setLong(index++, rezervacija.getKupacId());
+                } else {
+                    preparedStatement.setNull(index++, Types.BIGINT);
+                }
+
                 return preparedStatement;
             }
         };

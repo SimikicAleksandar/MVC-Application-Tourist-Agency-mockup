@@ -40,6 +40,9 @@
       <td>
         <form th:action="@{/rezervacije/confirm}" method="post">
           <input type="hidden" name="rezervacijaId" th:value="${rezervacija.id}" />
+          <input type="hidden" name="brojPutnika" th:value="${rezervacija.brojPutnika}"/>
+          <input type="hidden" name="putovanjeId" th:value="${rezervacija.putovanje.id}"/>
+
           <button type="submit" class="btn btn-secondary btn-sm">Potvrdi</button>
         </form>
       </td>

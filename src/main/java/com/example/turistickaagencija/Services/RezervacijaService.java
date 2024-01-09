@@ -27,4 +27,5 @@ public class RezervacijaService {
     }
     public List<Rezervacija> pretraziRezervacije(String upit) {return rezervacijaDao.pretraziRezervacije(upit); }
 
+
 }

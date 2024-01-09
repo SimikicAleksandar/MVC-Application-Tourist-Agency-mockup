@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -35,13 +36,13 @@ public class RezervacijaController {
 
     @PostMapping("/rezervacije/new")
     public String saveRezervacija(@RequestParam("putovanjeId") long putovanjeId,
-                                  @RequestParam("brojPutnika") long brojPutnika, HttpServletRequest request, RedirectAttributes redirectAttributes) throws UserNotFoundException{
+                                  @RequestParam("brojPutnika") long brojPutnika, HttpServletRequest request, RedirectAttributes redirectAttributes) throws UserNotFoundException {
         Putovanje putovanje = putovanjeService.findOne(putovanjeId);
 
         Cookie[] cookies = request.getCookies();
         Korisnik korisnik = korisnikService.checkCookieUser(cookies);
 
-        if(korisnik.getUloga().equals(Uloga.KUPAC)){
+        if (korisnik.getUloga().equals(Uloga.KUPAC)) {
             Kupac kupac = kupacService.get(korisnik.getId());
             Rezervacija rezervacija = new Rezervacija();
             rezervacija.setDatumIVremeRezervacije(LocalDateTime.now());
@@ -61,22 +62,22 @@ public class RezervacijaController {
     @GetMapping("rezervacije")
     public String prikaziRezervacije(Model model, HttpServletRequest httpServletRequest,
                                      @RequestParam(name = "upit", required = false) String upit,
-                                     RedirectAttributes redirectAttributes) throws UserNotFoundException{
+                                     RedirectAttributes redirectAttributes) throws UserNotFoundException {
         List<Rezervacija> lista;
-        if (upit != null && !upit.isEmpty()){
+        if (upit != null && !upit.isEmpty()) {
             lista = rezervacijaService.pretraziRezervacije(upit);
-        }else {
+        } else {
             lista = rezervacijaService.findAll();
         }
         model.addAttribute("prikaziRezervacije", lista);
 
-        if (redirectAttributes.getFlashAttributes().containsKey("message")){
+        if (redirectAttributes.getFlashAttributes().containsKey("message")) {
             String message = (String) redirectAttributes.getFlashAttributes().get("message");
             model.addAttribute("message", message);
         }
 
         Cookie[] cookies = httpServletRequest.getCookies();
-        if (korisnikService.checkCookies(cookies, Uloga.MENADZER)){
+        if (korisnikService.checkCookies(cookies, Uloga.MENADZER)) {
             return "rezervacije";
         }
 
@@ -89,9 +90,9 @@ public class RezervacijaController {
     }
 
     @PostMapping("rezervacije/confirm")
-    public String potvrdiRezervaciju(@RequestParam("rezervacijaId") long id, HttpServletRequest httpServletRequest, RedirectAttributes redirectAttributes)
-        throws UserNotFoundException{
-        Rezervacija rezervacija = rezervacijaService.get(id);
+    public String potvrdiRezervaciju(@RequestParam("rezervacijaId") long id, @RequestParam("brojPutnika") long brojPutnika,  @RequestParam("putovanjeId") long putovanjeId,HttpServletRequest httpServletRequest, RedirectAttributes redirectAttributes)
+            throws UserNotFoundException {
+
 
         Cookie[] cookies = httpServletRequest.getCookies();
         Korisnik korisnik = korisnikService.checkCookieUser(cookies);
@@ -99,49 +100,33 @@ public class RezervacijaController {
         if (korisnik == null) {
             return "redirect:/login";
         }
+        try {
+            Rezervacija rezervacija = rezervacijaService.get(id);
+            Kupac kupac = rezervacija.getKupac();
+            Putovanje putovanje = putovanjeService.findOne(putovanjeId);
 
-        // Check if the user is a buyer (Kupac)
-        if (korisnik.getUloga().equals(Uloga.KUPAC)) {
-            // Assuming you have a form to collect the number of passengers, use @RequestParam to get the value
-            // Replace "numberOfPassengers" with the actual parameter name in your HTML form
-            // Example: <input type="text" name="numberOfPassengers" />
-            long brojPutnika = Integer.parseInt(httpServletRequest.getParameter("brojPutnika"));
+            // Update Kupac's isReservisao value to true
+            kupac.setRezervisao(true);
+            kupacService.update(kupac);
 
-            // Update the reservation details
-            rezervacija.setBrojPutnika(brojPutnika);
-            // Set the reservation as confirmed
-         //   rezervacija.setPotvrdjena(true); //////////////////////////////////////////////
+            // Reduce the number of available seats for the Putovanje
+            putovanje.setBrojSlobodnihMesta(putovanje.getBrojSlobodnihMesta() - brojPutnika);
+            putovanjeService.update(putovanje);
+            rezervacijaService.delete(id);
+            // Your existing logic for displaying a message
+            redirectAttributes.addFlashAttribute("message", "REZERVACIJA JE POTVRĐENA");
 
-            // Update the available seats for the corresponding trip
-            Putovanje putovanje = rezervacija.getPutovanje();
-            long brojSlobodnihMesta = putovanje.getBrojSlobodnihMesta();
+            // Optional: You may want to update the rezervacija entity as well, depending on your data model
+            //rezervacija.setPotvrdjeno(true);
+           // rezervacijaService.save(rezervacija);
 
-            if (brojSlobodnihMesta >= brojPutnika) {
-                putovanje.setBrojSlobodnihMesta(brojSlobodnihMesta - brojPutnika);
-
-                // Update the 'jerezervisao' field in the Kupac entity
-                Kupac kupac = (Kupac) korisnik;
-                kupac.setRezervisao(true);
-
-                putovanjeService.save(putovanje);
-                rezervacijaService.save(rezervacija);
-
-                redirectAttributes.addFlashAttribute("message", "Rezervacija potvrđena.");
-            } else {
-                redirectAttributes.addFlashAttribute("message", "Nema dovoljno dostupnih mesta.");
-            }
-        } else {
-            redirectAttributes.addFlashAttribute("message", "Samo kupci mogu da rezervisu putovanje.");
+        } catch (EntityNotFoundException e) {
+            // Handle the case where the requested reservation or entities are not found
+            redirectAttributes.addFlashAttribute("message", "GREŠKA PRILIKOM POTVRĐIVANJA REZERVACIJE");
         }
 
         return "redirect:/rezervacije";
     }
-
-
-
-
-
-
 
 
 }
