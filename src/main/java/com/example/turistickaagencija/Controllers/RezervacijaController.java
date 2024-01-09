@@ -50,9 +50,9 @@ public class RezervacijaController {
             rezervacija.setPutovanje(putovanje);
             rezervacijaService.save(rezervacija);
 
-            redirectAttributes.addFlashAttribute("message", "rezervacija uspesna");
+            redirectAttributes.addFlashAttribute("message", "PODNELI STE ZAHTEV ZA REZERVACIJU");
         } else {
-            redirectAttributes.addFlashAttribute("message", "rezervacija nije uspesna");
+            redirectAttributes.addFlashAttribute("message", "ZAO NAM JE, NISTE USPELI DA PODNESETE ZAHTEV ZA REZERVACIJU");
         }
         return "redirect:/index"; //ovde vidi gde stvarno treba da te redirektuje
         //naknadni komentar (valjda treba na index neam pojma vise)
