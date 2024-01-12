@@ -10,6 +10,7 @@ import net.bytebuddy.asm.Advice;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -34,8 +35,8 @@ public class RezervacijaController {
         this.rezervacijaService = rezervacijaService;
     }
 
-    @PostMapping("/rezervacije/new")
-    public String saveRezervacija(@RequestParam("putovanjeId") long putovanjeId,
+    @PostMapping("/rezervacije/new/{id}")
+    public String saveRezervacija(@PathVariable("id") Long putovanjeId,
                                   @RequestParam("brojPutnika") long brojPutnika, HttpServletRequest request, RedirectAttributes redirectAttributes) throws UserNotFoundException {
         Putovanje putovanje = putovanjeService.findOne(putovanjeId);
 

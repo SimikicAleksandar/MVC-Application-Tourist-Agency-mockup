@@ -77,8 +77,8 @@
         </tr>
         </thead>
         <tbody>
-        <th:block th:each="putovanje : ${listPutovanja}">
-          <tr>
+          <tr th:each="putovanje : ${listPutovanja}" >
+            <form th:action="@{'/rezervacije/new/' + ${putovanje.id}}" method="post" th:id="'reservationForm-' + ${putovanje.id}" >
             <td><span th:text="${putovanje.id}"></span></td>
             <td><span th:text="${putovanje.prevoznoSredstvo}"></span></td>
             <td><span th:text="${putovanje.smestajnaJedinica}"></span></td>
@@ -91,12 +91,12 @@
             <td><span th:text="${putovanje.ukupanBrojMesta}"></span></td>
             <td><span th:text="${putovanje.brojSlobodnihMesta}"></span></td>
             <td>
-              <form th:action="@{'/rezervacije/new'}" method="post" id="reservationForm">
-                <input type="hidden" name="putovanjeId" th:value="${putovanje.id}" />
                 <!-- Add a hidden input field to store the number of passengers -->
-                <input type="hidden" id="numberOfPassengersInput" name="brojPutnika" />
-                <div th:if="${uloga == 'kupac'}">
-                <button type="button" class="btn btn-secondary btn-sm" onclick="promptForPassengers()">REZERVISI</button>
+              <input type="hidden" th:id="'numberOfPassengersInput-' + ${putovanje.id}" name="brojPutnika" />
+
+              <div th:if="${uloga == 'kupac'}">
+                  <button type="button" class="btn btn-secondary btn-sm" th:onclick="'promptForPassengers(' + ${putovanje.id} + ')'" >REZERVISI</button>
+
                 </div>
                 <div th:if="${uloga != 'kupac'}">
                   <a th:href="@{/login}" class="btn btn-secondary btn-sm">REZERVISI</a>
@@ -104,25 +104,25 @@
               </form>
             </td>
           </tr>
-        </th:block>
         </tbody>
       </table>
     </div>
   </div>
 </div>
 <script>
-  function promptForPassengers() {
+  function promptForPassengers(putovanjeId) {
     var brojPutnika = prompt("Unesite broj osoba za koje rezervisete:", "1");
 
     // Check if the user entered a number and is not null or empty
     if (brojPutnika !== null && brojPutnika !== "") {
       // Set the value of the hidden input field in your form
-      document.getElementById("numberOfPassengersInput").value = brojPutnika;
+      document.getElementById("numberOfPassengersInput-" + putovanjeId).value = brojPutnika;
 
       // Submit the form
-      document.getElementById("reservationForm").submit();
+      document.getElementById("reservationForm-" + putovanjeId).submit();
     }
   }
+
 </script>
 <script>
   // Function to show a popup with the message content
