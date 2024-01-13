@@ -89,7 +89,7 @@
             <td><span th:text="${putovanje.brojNocenja}"></span></td>
             <td><span th:text="${putovanje.cenaAranzmana}"></span></td>
             <td><span th:text="${putovanje.ukupanBrojMesta}"></span></td>
-            <td><span th:text="${putovanje.brojSlobodnihMesta}"></span></td>
+            <td th:id="'brojSlobodnihMesta-' + ${putovanje.id}"><span th:text="${putovanje.brojSlobodnihMesta}"></span></td>
             <td>
                 <!-- Add a hidden input field to store the number of passengers -->
               <input type="hidden" th:id="'numberOfPassengersInput-' + ${putovanje.id}" name="brojPutnika" />
@@ -111,18 +111,32 @@
 </div>
 <script>
   function promptForPassengers(putovanjeId) {
-    var brojPutnika = prompt("Unesite broj osoba za koje rezervisete:", "1");
+    var brojSlobodnihMesta = parseInt(document.getElementById("brojSlobodnihMesta-" + putovanjeId).innerText);
 
-    // Check if the user entered a number and is not null or empty
-    if (brojPutnika !== null && brojPutnika !== "") {
-      // Set the value of the hidden input field in your form
-      document.getElementById("numberOfPassengersInput-" + putovanjeId).value = brojPutnika;
+    if (brojSlobodnihMesta > 0) {
+      var brojPutnika = prompt("Unesite broj osoba za koje rezervisete:", "1");
 
-      // Submit the form
-      document.getElementById("reservationForm-" + putovanjeId).submit();
+      // Check if the user entered a number and is not null or empty
+      if (brojPutnika !== null && brojPutnika !== "") {
+        brojPutnika = parseInt(brojPutnika);
+
+        // Check if the entered number is greater than 0 and less than or equal to brojSlobodnihMesta
+        if (brojPutnika > 0 && brojPutnika <= brojSlobodnihMesta) {
+          // Set the value of the hidden input field in your form
+          document.getElementById("numberOfPassengersInput-" + putovanjeId).value = brojPutnika;
+
+          // Submit the form
+          document.getElementById("reservationForm-" + putovanjeId).submit();
+        } else {
+          // Show an alert if the entered number is invalid
+          alert("Nazalost nema dovoljno mesta :(");
+        }
+      }
+    } else {
+      // Show an alert if brojSlobodnihMesta is 0 or less
+      alert("Rezervacije nisu moguće. Nema slobodnih mesta.");
     }
   }
-
 </script>
 <script>
   // Function to show a popup with the message content

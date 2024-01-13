@@ -91,9 +91,12 @@ public class RezervacijaController {
     }
 
     @PostMapping("rezervacije/confirm")
-    public String potvrdiRezervaciju(@RequestParam("rezervacijaId") long id, @RequestParam("brojPutnika") long brojPutnika,  @RequestParam("putovanjeId") long putovanjeId,HttpServletRequest httpServletRequest, RedirectAttributes redirectAttributes)
-            throws UserNotFoundException {
-
+    public String potvrdiRezervaciju(
+            @RequestParam("rezervacijaId") long id,
+            @RequestParam("brojPutnika") long brojPutnika,
+            @RequestParam("putovanjeId") long putovanjeId,
+            HttpServletRequest httpServletRequest,
+            RedirectAttributes redirectAttributes) throws UserNotFoundException {
 
         Cookie[] cookies = httpServletRequest.getCookies();
         Korisnik korisnik = korisnikService.checkCookieUser(cookies);
@@ -101,10 +104,17 @@ public class RezervacijaController {
         if (korisnik == null) {
             return "redirect:/login";
         }
+
         try {
             Rezervacija rezervacija = rezervacijaService.get(id);
             Kupac kupac = rezervacija.getKupac();
             Putovanje putovanje = putovanjeService.findOne(putovanjeId);
+
+            // Check if there are enough available seats
+            if (putovanje.getBrojSlobodnihMesta() - brojPutnika < 0) {
+                redirectAttributes.addFlashAttribute("message", "NEMA DOVOLJNO MESTA ZA POTVRDU REZERVACIJE");
+                return "redirect:/rezervacije";
+            }
 
             // Update Kupac's isReservisao value to true
             kupac.setRezervisao(true);
@@ -114,12 +124,9 @@ public class RezervacijaController {
             putovanje.setBrojSlobodnihMesta(putovanje.getBrojSlobodnihMesta() - brojPutnika);
             putovanjeService.update(putovanje);
             rezervacijaService.delete(id);
+
             // Your existing logic for displaying a message
             redirectAttributes.addFlashAttribute("message", "REZERVACIJA JE POTVRĐENA");
-
-            // Optional: You may want to update the rezervacija entity as well, depending on your data model
-            //rezervacija.setPotvrdjeno(true);
-           // rezervacijaService.save(rezervacija);
 
         } catch (EntityNotFoundException e) {
             // Handle the case where the requested reservation or entities are not found
