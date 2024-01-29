@@ -20,5 +20,4 @@ public interface PutovanjeService {
     List<Putovanje> searchPutovanje(String query);
     public List<Putovanje> searchPutovanjeByAmountRange(Long minCena, Long maxCena);
     public List<Putovanje> findSortedPutovanje(String sort, String pravac) ;
-
 }

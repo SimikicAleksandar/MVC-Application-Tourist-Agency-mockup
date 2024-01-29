@@ -159,5 +159,13 @@ public class RezervacijaDaoImpl implements RezervacijaDao {
 
         return rowCallBackHandler.getRezervacije();
     }
+    @Override
+    public List<Rezervacija> findByPutovanjeId(Long putovanjeId) {
+        String sql = "SELECT * FROM rezervacije WHERE putovanjeId = ?";
+        RezervacijaRowCallBackHandler rowCallBackHandler = new RezervacijaRowCallBackHandler();
+        jdbcTemplate.query(sql, rowCallBackHandler, putovanjeId);
+
+        return new ArrayList<>(rowCallBackHandler.RezervacijaMap.values());
+    }
 
 }

@@ -1,9 +1,11 @@
 package com.example.turistickaagencija.Services.impl;
 
 import com.example.turistickaagencija.Daos.PutovanjeDao;
+import com.example.turistickaagencija.Daos.RezervacijaDao;
 import com.example.turistickaagencija.Exceptions.UserNotFoundException;
 import com.example.turistickaagencija.Models.Korisnik;
 import com.example.turistickaagencija.Models.Putovanje;
+import com.example.turistickaagencija.Models.Rezervacija;
 import com.example.turistickaagencija.Models.Uloga;
 import com.example.turistickaagencija.Services.PutovanjeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ public class DatabasePutovanjeServiceImpl implements PutovanjeService {
     @Autowired
     private PutovanjeDao putovanjeDao;
 
+    @Autowired
+    private RezervacijaDao rezervacijaDao;
 
     @Override
     public Putovanje get(Long id) {
@@ -73,4 +77,5 @@ public class DatabasePutovanjeServiceImpl implements PutovanjeService {
     public List<Putovanje> findSortedPutovanje(String sort, String pravac){
         return putovanjeDao.findSortedPutovanja(sort, pravac);
     }
+
 }

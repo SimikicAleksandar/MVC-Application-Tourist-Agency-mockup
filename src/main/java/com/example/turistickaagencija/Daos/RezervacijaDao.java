@@ -12,4 +12,5 @@ public interface RezervacijaDao {
     int delete(Long id);
     void deleteByKupac(Long kupacId, Long id);
     List<Rezervacija> pretraziRezervacije(String upit);
+    List<Rezervacija> findByPutovanjeId(Long putovanjeId);
 }

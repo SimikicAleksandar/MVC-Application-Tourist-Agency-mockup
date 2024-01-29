@@ -1,8 +1,10 @@
 package com.example.turistickaagencija.Controllers;
 
+import com.example.turistickaagencija.Daos.RezervacijaDao;
 import com.example.turistickaagencija.Exceptions.UserNotFoundException;
 import com.example.turistickaagencija.Models.KategorijaPutovanja;
 import com.example.turistickaagencija.Models.Putovanje;
+import com.example.turistickaagencija.Models.Rezervacija;
 import com.example.turistickaagencija.Models.Uloga;
 import com.example.turistickaagencija.Services.KategorijaPutovanjaService;
 import com.example.turistickaagencija.Services.KorisnikService;
@@ -23,7 +25,8 @@ public class PutovanjeController {
     private PutovanjeService putovanjeService;
     @Autowired
     private KategorijaPutovanjaService kategorijaPutovanjaService;
-
+    @Autowired
+    private RezervacijaDao rezervacijaDao;
     @Autowired
     private KorisnikService korisnikService;
 
@@ -132,10 +135,31 @@ public class PutovanjeController {
 
 
     @GetMapping("/putovanja/delete/{id}")
-    public String deletePutovanje(@PathVariable("id") Long id, RedirectAttributes ra){
-        putovanjeService.delete(id);
-        ra.addFlashAttribute("message", "Putovanje je obrisano!");
-        return "redirect:/putovanja";
+    public String deletePutovanje(@PathVariable("id") Long id, RedirectAttributes ra, HttpServletRequest request){
+        try {
+            // Check if the user has the role of a manager
+            Cookie[] cookies = request.getCookies();
+            if (!korisnikService.checkCookies(cookies, Uloga.MENADZER)) {
+                ra.addFlashAttribute("message", "Nemate ovlašćenje za brisanje putovanja");
+                return "redirect:/putovanja";
+            }
+            List<Rezervacija> rezervacije = rezervacijaDao.findByPutovanjeId(id);
+            if (rezervacije.isEmpty()) {
+                // If there are no reservations, delete the putovanje
+                putovanjeService.delete(id);
+                ra.addFlashAttribute("message", "Putovanje je obrisano!");
+            } else {
+                ra.addFlashAttribute("message", "Putovanje ne može biti obrisano jer postoje rezervacije vezane za njega.");
+            }
+
+            return "redirect:/putovanja";
+        } catch (Exception e) {
+            ra.addFlashAttribute("message", "Došlo je do greške prilikom brisanja putovanja");
+            return "redirect:/putovanja";
+        }
+//        putovanjeService.delete(id);
+//        ra.addFlashAttribute("message", "Putovanje je obrisano!");
+//        return "redirect:/putovanja";
     }
 
     @GetMapping("/putovanja/edit/{id}")
