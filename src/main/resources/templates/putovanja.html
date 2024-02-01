@@ -30,6 +30,8 @@
       <th scope="col">Cena</th>
       <th scope="col">Broj mesta</th>
       <th scope="col">Broj slobodnih mesta</th>
+      <th scope="col">Kraj akcije</th>
+      <th scope="col">Snizena cena</th>
       <th scope="col"></th>
     </tr>
     </thead>
@@ -46,6 +48,9 @@
       <td th:text="${putovanje.getCenaAranzmana()}"></td>
       <td th:text="${putovanje.getUkupanBrojMesta()}"></td>
       <td th:text="${putovanje.getBrojSlobodnihMesta()}"></td>
+      <td th:text="${putovanje.getKrajAkcije()}"></td>
+      <td th:text="${putovanje.snizenaCena != null ? putovanje.snizenaCena : 'Not calculated'}"></td>
+
 
 
       <td>
