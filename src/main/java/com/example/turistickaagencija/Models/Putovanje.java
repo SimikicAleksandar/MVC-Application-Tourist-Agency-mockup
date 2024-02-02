@@ -3,6 +3,8 @@ package com.example.turistickaagencija.Models;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.FutureOrPresent;
 
 public class Putovanje {
     private Long id;
@@ -12,8 +14,10 @@ public class Putovanje {
     //slika lokacije ako ti se da da radis za sedmicu
     private KategorijaPutovanja kategorijaPutovanja;
     private Long kategorijaPutovanjaId;
+    @FutureOrPresent(message = "Pocetak akcije mora da bude u sadasnjosti ili buducnosti")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime datumIVremePolaska;
+    @FutureOrPresent(message = "Kraj akcije mora da bude u sadasnjosti ili buducnosti")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime datumIVremePovratka;
     private Long brojNocenja;

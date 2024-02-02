@@ -12,11 +12,13 @@ import com.example.turistickaagencija.Services.PutovanjeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -106,10 +108,63 @@ public class PutovanjeController {
         ra.addFlashAttribute("message", "Putovanje je sacuvano");
         return "redirect:/putovanja";
     }*/
+
+//  @PostMapping("/putovanja/save")
+//  public String savePutovanje(@ModelAttribute("putovanje") Putovanje putovanje, RedirectAttributes redirectAttributes) throws UserNotFoundException {
+//      try {
+//          putovanje.setKategorijaPutovanja(kategorijaPutovanjaService.findKategorijaPutovanjaById(putovanje.getKategorijaPutovanjaId()));
+//
+//          // Calculate discounted price only if action fields are filled
+//          if (putovanje.getProcenatPopusta() != null && putovanje.getPocetakAkcije() != null && putovanje.getKrajAkcije() != null) {
+//              double cena = putovanje.getCenaAranzmana();
+//              double procenatPopusta = putovanje.getProcenatPopusta();
+//
+//              if (procenatPopusta > 0 && procenatPopusta <= 100) {
+//                  double discountAmount = (cena * procenatPopusta) / 100;
+//                  double discountedPrice = cena - discountAmount;
+//
+//                  // Store the discounted price in the Putovanje object
+//                  putovanje.setSnizenaCena(discountedPrice);
+//
+//                  // Log the discounted price for debugging
+//                  System.out.println("Discounted price: " + discountedPrice);
+//              } else {
+//                  // Handle invalid discount percentage
+//                  redirectAttributes.addFlashAttribute("message", "Putovanje je sacuvano, ali procenat popusta nije validan.");
+//                  return "redirect:/putovanja";
+//              }
+//          }
+//
+//          // Save or update Putovanje based on your existing logic
+//          if (putovanje.getId() == null) {
+//              putovanjeService.save(putovanje);
+//              redirectAttributes.addFlashAttribute("message", "Putovanje je sacuvano");
+//          } else {
+//              putovanjeService.update(putovanje);
+//              redirectAttributes.addFlashAttribute("message", "Putovanje je azurirano");
+//          }
+//
+//      } catch (Exception e) {
+//          // Handle exceptions
+//          e.printStackTrace();
+//          redirectAttributes.addFlashAttribute("error", "Error occurred while saving the Putovanje.");
+//      }
+//
+//      return "redirect:/putovanja";
+//  }
+
+   // OVA ISPOD JE U SUSTINI SLJAKALA PERFEKTNO
   @PostMapping("/putovanja/save")
-  public String savePutovanje(@ModelAttribute("putovanje") Putovanje putovanje, RedirectAttributes redirectAttributes) throws UserNotFoundException {
+  public String savePutovanje(@Valid @ModelAttribute("putovanje") Putovanje putovanje, BindingResult bindingResult, RedirectAttributes redirectAttributes) throws UserNotFoundException {
       try {
           putovanje.setKategorijaPutovanja(kategorijaPutovanjaService.findKategorijaPutovanjaById(putovanje.getKategorijaPutovanjaId()));
+
+          // Ensure that datumIVremePovratka is not before datumIVremePolaska
+          if (putovanje.getDatumIVremePovratka() != null && putovanje.getDatumIVremePolaska() != null &&
+                  putovanje.getDatumIVremePovratka().isBefore(putovanje.getDatumIVremePolaska())) {
+              redirectAttributes.addFlashAttribute("error", "Datum i vreme kraja ne može biti pre datuma i vremena početka putovanja.");
+              return "redirect:/putovanja";
+          }
 
           // Calculate discounted price only if action fields are filled
           if (putovanje.getProcenatPopusta() != null && putovanje.getPocetakAkcije() != null && putovanje.getKrajAkcije() != null) {
@@ -127,7 +182,7 @@ public class PutovanjeController {
                   System.out.println("Discounted price: " + discountedPrice);
               } else {
                   // Handle invalid discount percentage
-                  redirectAttributes.addFlashAttribute("message", "Putovanje je sacuvano, ali procenat popusta nije validan.");
+                  redirectAttributes.addFlashAttribute("message", "Putovanje je sačuvano, ali procenat popusta nije validan.");
                   return "redirect:/putovanja";
               }
           }
@@ -135,22 +190,20 @@ public class PutovanjeController {
           // Save or update Putovanje based on your existing logic
           if (putovanje.getId() == null) {
               putovanjeService.save(putovanje);
-              redirectAttributes.addFlashAttribute("message", "Putovanje je sacuvano");
+              redirectAttributes.addFlashAttribute("message", "Putovanje je sačuvano");
           } else {
               putovanjeService.update(putovanje);
-              redirectAttributes.addFlashAttribute("message", "Putovanje je azurirano");
+              redirectAttributes.addFlashAttribute("message", "Putovanje je ažurirano");
           }
 
       } catch (Exception e) {
           // Handle exceptions
           e.printStackTrace();
-          redirectAttributes.addFlashAttribute("error", "Error occurred while saving the Putovanje.");
+          redirectAttributes.addFlashAttribute("error", "Došlo je do greške prilikom čuvanja putovanja.");
       }
 
       return "redirect:/putovanja";
   }
-
-
 
 
     @PostMapping ("/putovanja/update")

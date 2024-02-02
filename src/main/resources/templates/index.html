@@ -35,50 +35,53 @@
             </a>
           </th>
           <th>
-            <a  style="text-decoration: none; color: #1a1d20">Prevozno Sredstvo</a>
+            <a style="text-decoration: none; color: #1a1d20">Prevozno Sredstvo</a>
           </th>
           <th>
-            <a  style="text-decoration: none; color: #1a1d20">Smestaj</a>
+            <a style="text-decoration: none; color: #1a1d20">Smestaj</a>
           </th>
           <th>
-            <a th:href="@{/index(order='nazivDestinacije', orderBy=${newOrderBy})}" style="text-decoration: none; color: #1a1d20">
-              Destinacija ▼▲
+            <a th:href="@{/index(order='nazivDestinacije', orderBy=${newOrderBy})}"
+               style="text-decoration: none; color: #1a1d20">Destinacija ▼▲
             </a>
           </th>
           <th>
-            <a  style="text-decoration: none; color: #1a1d20">Kategorija Putovanja</a>
+            <a style="text-decoration: none; color: #1a1d20">Kategorija Putovanja</a>
           </th>
           <th>
-            <a  style="text-decoration: none; color: #1a1d20">Polazak</a>
+            <a style="text-decoration: none; color: #1a1d20">Polazak</a>
           </th>
           <th>
-            <a  style="text-decoration: none; color: #1a1d20">Dolazak</a>
+            <a style="text-decoration: none; color: #1a1d20">Dolazak</a>
           </th>
           <th>
-            <a th:href="@{/index(order='brojNocenja', orderBy=${newOrderBy})}" style="text-decoration: none; color: #1a1d20">
-              BrojNocenja ▼▲
+            <a th:href="@{/index(order='brojNocenja', orderBy=${newOrderBy})}"
+               style="text-decoration: none; color: #1a1d20">BrojNocenja ▼▲
             </a>
           </th>
           <th>
-            <a th:href="@{/index(order='cenaAranzmana', orderBy=${newOrderBy})}" style="text-decoration: none; color: #1a1d20">
-              Cena ▼▲
+            <a th:href="@{/index(order='cenaAranzmana', orderBy=${newOrderBy})}"
+               style="text-decoration: none; color: #1a1d20">Cena ▼▲
             </a>
           </th>
           <th>
-            <a  style="text-decoration: none; color: #1a1d20">Broj Mesta</a>
+            <a style="text-decoration: none; color: #1a1d20">Broj Mesta</a>
           </th>
           <th>
-            <a  style="text-decoration: none; color: #1a1d20">Broj Slobodnih Mesta</a>
+            <a style="text-decoration: none; color: #1a1d20">Broj Slobodnih Mesta</a>
           </th>
           <th>
-            <a  style="text-decoration: none; color: #1a1d20">Rezervacija</a>
+            <a style="text-decoration: none; color: #1a1d20">Akcijska Cena</a>
           </th>
-
+          <th>
+            <a style="text-decoration: none; color: #1a1d20">Rezervacija</a>
+          </th>
         </tr>
         </thead>
         <tbody>
-          <tr th:each="putovanje : ${listPutovanja}" >
-            <form th:action="@{'/rezervacije/new/' + ${putovanje.id}}" method="post" th:id="'reservationForm-' + ${putovanje.id}" >
+        <tr th:each="putovanje : ${listPutovanja}">
+          <form th:action="@{'/rezervacije/new/' + ${putovanje.id}}" method="post"
+                th:id="'reservationForm-' + ${putovanje.id}">
             <td><span th:text="${putovanje.id}"></span></td>
             <td><span th:text="${putovanje.prevoznoSredstvo}"></span></td>
             <td><span th:text="${putovanje.smestajnaJedinica}"></span></td>
@@ -89,23 +92,30 @@
             <td><span th:text="${putovanje.brojNocenja}"></span></td>
             <td><span th:text="${putovanje.cenaAranzmana}"></span></td>
             <td><span th:text="${putovanje.ukupanBrojMesta}"></span></td>
-            <td th:id="'brojSlobodnihMesta-' + ${putovanje.id}"><span th:text="${putovanje.brojSlobodnihMesta}"></span></td>
+            <td th:id="'brojSlobodnihMesta-' + ${putovanje.id}">
+              <span th:text="${putovanje.brojSlobodnihMesta}"></span>
+            </td>
+            <td th:style="${putovanje.snizenaCena} ? 'background-color: lightgreen;' : ''">
+              <span th:if="${putovanje.snizenaCena}" th:text="${putovanje.snizenaCena}"></span>
+              <span th:unless="${putovanje.snizenaCena}">/</span>
+            </td>
             <td>
-                <!-- Add a hidden input field to store the number of passengers -->
+              <!-- Add a hidden input field to store the number of passengers -->
               <input type="hidden" th:id="'numberOfPassengersInput-' + ${putovanje.id}" name="brojPutnika" />
 
               <div th:if="${uloga == 'kupac'}">
-                  <button type="button" class="btn btn-secondary btn-sm" th:onclick="'promptForPassengers(' + ${putovanje.id} + ')'" >REZERVISI</button>
-
-                </div>
-                <div th:if="${uloga != 'kupac'}">
-                  <a th:href="@{/login}" class="btn btn-secondary btn-sm">REZERVISI</a>
-                </div>
-              </form>
+                <button type="button" class="btn btn-secondary btn-sm"
+                        th:onclick="'promptForPassengers(' + ${putovanje.id} + ')'">REZERVISI</button>
+              </div>
+              <div th:if="${uloga != 'kupac'}">
+                <a th:href="@{/login}" class="btn btn-secondary btn-sm">REZERVISI</a>
+              </div>
             </td>
-          </tr>
+          </form>
+        </tr>
         </tbody>
       </table>
+
     </div>
   </div>
 </div>

@@ -129,10 +129,30 @@
             <button type="submit" class="btn btn-secondary btn-sm">Sacuvaj</button>
             <button type="button" onclick="cancelForm()" class="btn btn-secondary btn-sm">Otkazi</button>
         </div>
+
+        <!-- Display validation errors -->
+        <div th:if="${#fields.hasErrors()}" class="alert alert-danger" role="alert">
+            <p th:each="error : ${#fields.errors()}" th:text="${error}"></p>
+        </div>
+
+        <!-- JavaScript to display errors -->
+        <script th:if="${#fields.hasErrors()}">
+            document.addEventListener("DOMContentLoaded", function () {
+                let errorMessages = /*[[${#fields.errors()}]]*/ [];
+                displayErrors(errorMessages);
+            });
+
+            function displayErrors(messages) {
+                alert("Validation Errors:\n" + messages.join('\n'));
+            }
+        </script>
+
+
     </form>
 </div>
-
 <script type="text/javascript">
+
+
     function cancelForm() {
         window.location = "[[@{/putovanja}]]";
     }
@@ -143,6 +163,8 @@
             element.classList.remove('hidden');
         });
     });
+
+
 </script>
 
 
