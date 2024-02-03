@@ -3,9 +3,11 @@ package com.example.turistickaagencija.Controllers;
 import com.example.turistickaagencija.Exceptions.UserNotFoundException;
 import com.example.turistickaagencija.Models.Korisnik;
 import com.example.turistickaagencija.Models.Kupac;
+import com.example.turistickaagencija.Models.Rezervacija;
 import com.example.turistickaagencija.Models.Uloga;
 import com.example.turistickaagencija.Services.KorisnikService;
 import com.example.turistickaagencija.Services.KupacService;
+import com.example.turistickaagencija.Services.RezervacijaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +27,8 @@ public class KorisnikController {
     private KorisnikService korisnikService;
     @Autowired
     private KupacService kupacService;
+    @Autowired
+    private RezervacijaService rezervacijaService;
 
 
     @GetMapping("/registracija")
@@ -115,10 +119,10 @@ public class KorisnikController {
 
     @GetMapping("/profil")
     public String showProfile(Model model, HttpServletRequest httpServletRequest) throws UserNotFoundException {
-
         Cookie[] cookies = httpServletRequest.getCookies();
         Korisnik korisnik = korisnikService.checkCookieUser(cookies);
         model.addAttribute("korisnik", korisnik);
+
         if(korisnik.getUloga().equals(Uloga.ADMINISTRATOR)){
             model.addAttribute("uloga", "ADMINISTRATOR");
         }
@@ -127,7 +131,12 @@ public class KorisnikController {
         }
         else if(korisnik.getUloga().equals(Uloga.KUPAC)){
             model.addAttribute("uloga", "KUPAC");
+            // Fetch only active reservations for the logged-in KUPAC
+            List<Rezervacija> listAktivneRezervacije = rezervacijaService.getAktivneRezervacijeByKupacId(korisnik.getId());
+            model.addAttribute("listAktivneRezervacije", listAktivneRezervacije);
         }
+
+
         return "profil";
     }
 }

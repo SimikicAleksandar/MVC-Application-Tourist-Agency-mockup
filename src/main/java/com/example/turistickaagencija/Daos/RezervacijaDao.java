@@ -13,4 +13,5 @@ public interface RezervacijaDao {
     void deleteByKupac(Long kupacId, Long id);
     List<Rezervacija> pretraziRezervacije(String upit);
     List<Rezervacija> findByPutovanjeId(Long putovanjeId);
+    List<Rezervacija> getAktivneRezervacijeByKupacId(Long id);
 }

@@ -27,5 +27,10 @@ public class RezervacijaService {
     }
     public List<Rezervacija> pretraziRezervacije(String upit) {return rezervacijaDao.pretraziRezervacije(upit); }
 
+    public List<Rezervacija> getAktivneRezervacijeByKupacId(Long id) {
+        return rezervacijaDao.getAktivneRezervacijeByKupacId(id);
+    }
+
+
 
 }

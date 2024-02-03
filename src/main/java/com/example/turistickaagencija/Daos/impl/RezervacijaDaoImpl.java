@@ -168,4 +168,22 @@ public class RezervacijaDaoImpl implements RezervacijaDao {
         return new ArrayList<>(rowCallBackHandler.RezervacijaMap.values());
     }
 
+    @Override
+    public List<Rezervacija> getAktivneRezervacijeByKupacId(Long kupacId) {
+        String sql =
+                "SELECT r.id, r.datumIVremeRezervacije, r.brojPutnika, r.putovanjeId, r.kupacId "
+                        + "FROM rezervacije r "
+                        + "WHERE r.kupacId = ? "
+                        + "ORDER BY r.id";
+
+        RezervacijaDaoImpl.RezervacijaRowCallBackHandler rowCallBackHandler = new RezervacijaDaoImpl.RezervacijaRowCallBackHandler();
+        jdbcTemplate.query(sql, rowCallBackHandler, kupacId);
+
+        if (rowCallBackHandler.getRezervacije().isEmpty()) {
+            return null;
+        }
+        return rowCallBackHandler.getRezervacije();
+    }
+
+
 }

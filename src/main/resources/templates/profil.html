@@ -55,6 +55,40 @@
     <br>
     <a th:href="@{'/korisnici/edit/' + ${korisnik.id}}" class="btn btn-secondary btn-sm" >Izmeni lične podatke</a>
   </div>
+
+  <!-- PRIKAZ REZERVACIJA AKO JE KORISNICKA ULOGA == KUPAC -->
+  <div th:if="${uloga == 'KUPAC'}">
+    <h4>Aktivne rezervacije</h4>
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Datum I Vreme Rezervacije</th>
+        <th scope="col">Ime Kupca</th>
+        <th scope="col">Prezime Kupca</th>
+        <th scope="col">Broj putnika</th>
+        <th scope="col">Destinacija</th>
+        <th scope="col">Smestaj</th>
+        <th scope="col">Broj Nocenja</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="rezervacija : ${listAktivneRezervacije}">
+        <!-- Display reservation details... -->
+        <td th:text="${rezervacija.id}"></td>
+        <td th:text="${#temporals.format(rezervacija.datumIVremeRezervacije, 'dd.MM.yyyy HH:mm:ss')}"></td>
+        <td th:text="${rezervacija.kupac.korisnik.ime}"></td>
+        <td th:text="${rezervacija.kupac.korisnik.prezime}"></td>
+        <td th:text="${rezervacija.brojPutnika}"></td>
+        <td th:text="${rezervacija.putovanje.nazivDestinacije}"></td>
+        <td th:text="${rezervacija.putovanje.smestajnaJedinica}"></td>
+        <td th:text="${rezervacija.putovanje.brojNocenja}"></td>
+
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
 </div>
 
 </body>
